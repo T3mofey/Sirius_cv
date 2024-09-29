@@ -59,6 +59,7 @@ def replace_background(image_path,mask_path,background):
     mask=np.array(mask)
     if np.max(mask) > 1:
      mask = np.where(mask > 128, 255, 0).astype(np.uint8)
+    mask = cv2.resize(mask, (width, height), interpolation=cv2.INTER_NEAREST)
     mask_inv=cv2.bitwise_not(mask)
     object_foreground=cv2.bitwise_and(image,image,mask=mask)
     object_background=cv2.bitwise_and(background,background,mask=mask_inv)
@@ -67,7 +68,7 @@ def replace_background(image_path,mask_path,background):
     result_image=Image.fromarray(result)
     return result_image
 
-folder_path = "/home/timofey/computer_vision/resulted_images"
+folder_path = "/home/timofey/computer_vision/resulted_images_nvidia"
 os.makedirs(folder_path,exist_ok=True)
 folder_dir="/home/timofey/computer_vision/sirius_data"
 
@@ -87,12 +88,12 @@ if os.path.exists(folder_path):
 else:
     print(f"Folder {folder_path} does not exist.")
 
-res_path="/home/timofey/computer_vision/resulted_images"
+res_path="/home/timofey/computer_vision/resulted_images_nvidia"
 os.makedirs(res_path,exist_ok=True)
 
 grad_texture="/home/timofey/computer_vision/grad_back"
 backgr_dir=grad_texture
-mask_dir="/home/timofey/computer_vision/bria_masks"
+mask_dir="/home/timofey/computer_vision/nvidia_images"
 folder1=natsorted(os.listdir(folder_dir))
 folder3=natsorted(os.listdir(mask_dir))
 
@@ -132,4 +133,5 @@ def proccess_images(folder_dir,mask_dir,result_path,background_choice):
                 except Exception as e:
                     print(f"type of error {e}")
                     continue
-proccess_images(folder_dir,mask_dir,res_path,'light_gray')
+                break
+proccess_images(folder_dir,mask_dir,res_path,'dark_gray')
