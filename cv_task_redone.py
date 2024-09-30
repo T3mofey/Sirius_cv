@@ -169,86 +169,8 @@ for image in os.listdir(folder_dir):
 bria_dataset=CustomImageDataset(folder_dir)
 bria_dataloader=DataLoader(bria_dataset,batch_size=8)
 
-"""Nvidia segmentation"""
-
-'''from transformers import SegformerImageProcessor, SegformerForSemanticSegmentation
-from PIL import Image
-import requests
-
-processor = SegformerImageProcessor.from_pretrained("nvidia/segformer-b0-finetuned-ade-512-512")
-model = SegformerForSemanticSegmentation.from_pretrained("nvidia/segformer-b0-finetuned-ade-512-512")
-
-url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-image = Image.open(requests.get(url, stream=True).raw)
-
-inputs = processor(images=image, return_tensors="pt")
-outputs = model(**inputs)
-logits = outputs.logits  # shape (batch_size, num_labels, height/4, width/4)
-'''
 
 
-'''
-from transformers import SegformerImageProcessor, AutoModelForSemanticSegmentation
-from PIL import Image
-import requests
-import matplotlib.pyplot as plt
-import torch.nn as nn
-
-processor = SegformerImageProcessor.from_pretrained("mattmdjaga/segformer_b2_clothes")
-model = AutoModelForSemanticSegmentation.from_pretrained("mattmdjaga/segformer_b2_clothes")
-
-url = "https://plus.unsplash.com/premium_photo-1673210886161-bfcc40f54d1f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGVyc29uJTIwc3RhbmRpbmd8ZW58MHx8MHx8&w=1000&q=80"
-
-image = Image.open(requests.get(url, stream=True).raw)
-inputs = processor(images=image, return_tensors="pt")
-
-outputs = model(**inputs)
-logits = outputs.logits.cpu()
-
-upsampled_logits = nn.functional.interpolate(
-    logits,
-    size=image.size[::-1],
-    mode="bilinear",
-    align_corners=False,
-)
-
-pred_seg = upsampled_logits.argmax(dim=1)[0]
-plt.imshow(pred_seg)
-'''
-import matplotlib.pyplot as plt
-import torch
-import numpy as np
-import cv2
-import os
-from os import listdir
-
-device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-for pic in os.listdir(folder_dir):
-  pic_path=os.path.join(folder_dir,pic)
-  try:
-    # Reading image
-    sample_image=cv2.imread(pic_path)
-    img=cv2.cvtColor(sample_image,cv2.COLOR_BGR2RGB)
-    img=cv2.resize(img,(256,256))
-    # Applying thresholding
-    gray=cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
-    _,thresh=cv2.threshold(gray,np.mean(gray),255,cv2.THRESH_BINARY_INV)
-    # Detecting edges and creating mask
-    edges=cv2.dilate(cv2.Canny(thresh,0,255),None)
-    contours, _ = cv2.findContours(edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-    if len(contours) > 0:
-      cont = sorted(contours, key=cv2.contourArea)[-1]
-      mask = np.zeros((256, 256), np.uint8)
-      masked = cv2.drawContours(mask, [cont], -1, 255, -1)
-    dst=cv2.bitwise_and(img,img,mask=mask)
-    segmented=cv2.cvtColor(dst,cv2.COLOR_BGR2RGB)
-    plt.axis('off')
-    plt.imshow(segmented)
-    plt.pause(0.001)  # Временно приостанавливаем выполнение для отображения изображения
-    plt.clf()  # Очищаем фигуру для следующего изображения
-  except Exception as e:
-    continue
 
 
 

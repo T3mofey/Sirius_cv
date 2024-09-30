@@ -68,7 +68,7 @@ def replace_background(image_path,mask_path,background):
     result_image=Image.fromarray(result)
     return result_image
 
-folder_path = "/home/timofey/computer_vision/resulted_images_nvidia"
+folder_path = "/home/timofey/computer_vision/resulted_images_opencv"
 os.makedirs(folder_path,exist_ok=True)
 folder_dir="/home/timofey/computer_vision/sirius_data"
 
@@ -88,12 +88,12 @@ if os.path.exists(folder_path):
 else:
     print(f"Folder {folder_path} does not exist.")
 
-res_path="/home/timofey/computer_vision/resulted_images_nvidia"
+res_path="/home/timofey/computer_vision/resulted_images_opencv"
 os.makedirs(res_path,exist_ok=True)
 
 grad_texture="/home/timofey/computer_vision/grad_back"
 backgr_dir=grad_texture
-mask_dir="/home/timofey/computer_vision/nvidia_images"
+mask_dir="/home/timofey/computer_vision/opencv_images"
 folder1=natsorted(os.listdir(folder_dir))
 folder3=natsorted(os.listdir(mask_dir))
 
