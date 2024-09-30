@@ -37,5 +37,6 @@ https://huggingface.co/Salesforce/blip-image-captioning-large
 Описание приводилось только для картинок, обработанных моделью BriaAI. Код выполняющий описание называется captioning.py. Картинки с генерированным описанием под ними лежит в папке images_with_captions.
 
 Так же можно посмотреть как все модели сегментации выполняют свою задачу в соответствующих папках начинающихся с resulted_images. Proccessed_images1 это результат работы briaai и resulted_images тоже.
+
 ПАПКА assignment1 не относится к задаче. 
 
