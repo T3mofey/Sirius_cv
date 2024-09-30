@@ -1,0 +1,6 @@
+Mean IoU score for opencv: 0.8099871482191746 
+Mean Dice score for opencv: 0.8707390161408152
+Mean IoU score for nvidia: 0.7289875620773728 
+Mean Dice score for nvidia: 0.813890224203846
+Mean IoU score for matt: 0.7641975901591294 
+Mean Dice score for matt: 0.8191425984571522
