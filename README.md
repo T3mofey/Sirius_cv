@@ -26,7 +26,14 @@ matt_model.py
 Для непосредственного расчета точности удаления фона использовались метрики: Intersection over union(IoU) и Dice coefficient(F1-score).
 
 Расчет метрик лежит в файле Score.py
-Для описания картинок использовалась модель - .
+
+Наложение фона проводится в файле applying_back.py. Для просмотра того, как накладывается фон у разных моделей нужно поменять mask_dir на директорию с масками нужной модели.
+
+Для описания картинок использовалась модель - Salesforce/blip-image-captioning-large.
 Ссылка на Huggingface:
+
+https://huggingface.co/Salesforce/blip-image-captioning-large
+
+Описание приводилось только для картинок, обработанных моделью BriaAI. Картинки с генерированным описанием под ними лежит в папке images_with_captions
 
 
