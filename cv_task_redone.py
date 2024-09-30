@@ -9,99 +9,19 @@ Original file is located at
 
 
 
-"""Аугментация данных(крутить, замылить и тд)"""
-
-from torchvision import transforms
-augmentation=transforms.Compose([
-    transforms.RandomResizedCrop(224),
-    transforms.RandomHorizontalFlip(),
-    transforms.RandomGrayscale(p=0.2),
-    transforms.GaussianBlur(kernel_size=(5,5)),
-    transforms.ColorJitter(brightness=0.4,contrast=0.4,saturation=0.4,hue=0.2),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485,0.456,0.406],std=[0.229,0.224,0.225])
-])
 
 
 
-"""Создаем модель BYOL"""
-
-
-'''import torch
-import torch.nn as nn
-from lightly.models import BYOL
-from torchvision.models import resnet18
-
-resnet = resnet18(pretrained=False)
-backbone = nn.Sequential(*list(resnet.children())[:-1])
-model_byol=BYOL(backbone,num_ftrs=512,hidden_dim=4096,out_dim=256)
-
-from torch import optim
-import torch.nn as nn
-import torch.nn.functional as F
-optimizer=optim.Adam(model_byol.parameters(),lr=1e-4)
-criterion=nn.MSELoss()
-torch.cuda.empty_cache()
-class BYOLLoss(nn.Module):
-  def __init__(self):
-    super (BYOLLoss,self).__init__()
-  def forward(self,x1_loss,x2_loss):
-    x1_loss=F.normalize(x1_loss,dim=-1,p=2)
-    x2_loss=F.normalize(x2_loss,dim=-1,p=2)
-    x2_loss=x2_loss.unsqueeze(-1)
-    loss=2-2*(x1_loss*x2_loss.sum(dim=-1))
-    return loss.mean()
-device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model_byol=model_byol.to(device)
-loss_fn=BYOLLoss()
-for epoch in range(100):
-  model_byol.train()
-  total_loss=0
-  for x1,x2,_ in dataload:
-    x1=x1.to(device)
-    x2=x2.to(device)
-    x1_loss,x2_loss=model_byol(x1,x2)
-    print(x1_loss)
-    loss=loss_fn(x1_loss,x2_loss)
-    total_loss+=loss.item()
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-  print(f"number of epoch = {epoch}\t total loss = {total_loss} ")
-'''
 """Удаление фона с помощью briaai"""
 
 from transformers import pipeline
 import torch
 from transformers import AutoModelForImageSegmentation
-import torchvision.transforms as T
-from torchvision.transforms.functional import normalize
-from torch.utils.data import DataLoader
-from torch.utils.data import Dataset
 from PIL import Image
 import os
 
 folder_dir="/home/timofey/computer_vision/sirius_data"
-class CustomImageDataset(Dataset):
-    def __init__(self, img_dir, transform=None):
-        self.img_dir = img_dir
-        self.transform = transform
-        self.image_paths = [img_name for img_name in os.listdir(self.img_dir)
-                            if img_name.endswith(('jpg', 'png', 'jpeg'))]
 
-    def __len__(self):
-        return len(self.image_paths)
-
-    def __getitem__(self, idx):
-        img_path = os.path.join(self.img_dir,self.image_paths[idx])
-        try:
-            image = Image.open(img_path).convert("RGB")
-        except Exception as e:
-            print(f"error opening image {e}")
-            return None, None
-        if self.transform:
-            image = self.transform(image)
-        return image, self.image_paths[idx]  
     
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model_br_segment = AutoModelForImageSegmentation.from_pretrained("briaai/RMBG-1.4",trust_remote_code=True)
@@ -112,35 +32,10 @@ print(device)
 
 torch.cuda.empty_cache()
 
-'''bria_folder = "/home/timofey/computer_vision/processed_images1"
+   
 
-if not os.path.exists(bria_folder):
-    os.makedirs(bria_folder)
-
-transform=transforms.Compose([
-    transforms.ToTensor()])
-bria_dataset=CustomImageDataset(folder_dir,transform=transform)
-bria_dataloader=DataLoader(bria_dataset,batch_size=4,shuffle=False)
-
-to_pil = T.ToPILImage()
-
-for batch in bria_dataloader:
-    images,filenames=batch
-    for image,filename in zip(images,filenames):
-        if image is None:
-            continue
-        pil_image=to_pil(image).convert("RGB")
-        res=pipe(pil_image)
-        if isinstance(res, Image.Image):  # Check if the result is a PIL image
-            processed_image_filename = os.path.join(bria_folder, f"{filename}")
-            res.save(processed_image_filename)  # Save the processed image
-            print(f"Saved processed image: {processed_image_filename}")
-        else:
-            print(f"Unexpected result format for image: {filename}")
-  '''      
-arr1=[]
-
-bria_folder = "/home/timofey/computer_vision/processed_images"
+bria_folder = "/home/timofey/computer_vision/bria_proccessed_images"
+os.makedirs(bria_folder,exist_ok=True)
 masks_folder= "/home/timofey/computer_vision/bria_masks"
 os.makedirs(masks_folder,exist_ok=True)
 for image in os.listdir(folder_dir):
@@ -149,12 +44,12 @@ for image in os.listdir(folder_dir):
         pillow_mask = pipe(image_path, return_mask=True)
         pillow_image = pipe(image_path).convert("RGB")
 
-        #save_path = os.path.join(bria_folder, image)
-        save_masks_path=os.path.join(masks_folder,image)
+        save_path = os.path.join(bria_folder, image)
+        #save_masks_path=os.path.join(masks_folder,image)
         # Сохраняем изображение, если это объект PIL
         if isinstance(pillow_image, Image.Image):
-            #pillow_image.save(save_path)
-            pillow_mask.save(save_masks_path)
+            pillow_image.save(save_path)
+            #pillow_mask.save(save_masks_path)
             
         else:
             print(f"Unexpected type for pillow_image: {type(pillow_image)}")
@@ -162,15 +57,6 @@ for image in os.listdir(folder_dir):
     except Exception as e:
         print(f"Error processing {image}: {e}")
         continue
-
-    arr1.append(pillow_image)
-    print(f"Image {image} processed and saved successfully.")
-
-bria_dataset=CustomImageDataset(folder_dir)
-bria_dataloader=DataLoader(bria_dataset,batch_size=8)
-
-
-
 
 
 

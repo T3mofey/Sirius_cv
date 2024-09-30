@@ -9,6 +9,10 @@ Created on Mon Sep 30 11:46:30 2024
 import numpy as np
 import os
 from PIL import Image
+import torch 
+
+device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+torch.cuda.empty_cache()
 
 mask_from_opencv_dir = "/home/timofey/computer_vision/opencv_images"
 mask_from_matt_dir="/home/timofey/computer_vision/matt_images"
@@ -20,7 +24,7 @@ folder2=sorted(os.listdir(mask_from_opencv_dir))
 folder3=sorted(os.listdir(mask_from_nvidia_dir))
 folder4=sorted(os.listdir(mask_from_matt_dir))
 
-def compute_iou(mask1, mask2): #Функция для пдсчета Intersection over UNion score
+def compute_iou(mask1, mask2): #Функция для подсчета Intersection over UNion score
     intersection = np.logical_and(mask1, mask2).sum()
     union = np.logical_or(mask1, mask2).sum()
     iou = intersection / union if union != 0 else 0
