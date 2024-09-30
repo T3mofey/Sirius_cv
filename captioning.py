@@ -61,21 +61,21 @@ if os.path.exists(folder_path):
             print(f"Failed to delete {file_path}. Reason: {e}")
 else:
     print(f"Folder {folder_path} does not exist.")
-    
-text=""
+
+
+text = "Product is"
+
 for image in os.listdir(image_dir):
     image_path=os.path.join(image_dir,image)
     raw_image=Image.open(image_path).convert("RGB")
-    #raw_image = raw_image.resize((raw_image.width // 2, raw_image.height // 2))
-    inputs = processor(raw_image,text,return_tensors="pt").to(device)
-    out= model.generate(**inputs,num_beams=3, top_p=0.9, temperature=0.7,max_length=80)
+    inputs = processor(raw_image,text=text,return_tensors="pt").to(device)
+    out= model.generate(**inputs,num_beams=3, top_p=0.5, temperature=0.7,max_length=80)
     caption=processor.decode(out[0], skip_special_tokens=True)
     print(image)
-    arr.append(caption)
-    #output=add_caption_below_image(raw_image, caption=caption)
-   #save_path=os.path.join(output_path,image)
-    #output.save(save_path)
-for i in range(10):
-    print(arr[i])
+    output=add_caption_below_image(raw_image, caption=caption)
+    save_path=os.path.join(output_path,image)
+    output.save(save_path)
+    
+
    
 
