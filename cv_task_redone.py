@@ -45,11 +45,11 @@ for image in os.listdir(folder_dir):
         pillow_image = pipe(image_path).convert("RGB")
 
         save_path = os.path.join(bria_folder, image)
-        #save_masks_path=os.path.join(masks_folder,image)
+        save_masks_path=os.path.join(masks_folder,image)
         # Сохраняем изображение, если это объект PIL
         if isinstance(pillow_image, Image.Image):
             pillow_image.save(save_path)
-            #pillow_mask.save(save_masks_path)
+            pillow_mask.save(save_masks_path)
             
         else:
             print(f"Unexpected type for pillow_image: {type(pillow_image)}")
@@ -62,39 +62,4 @@ for image in os.listdir(folder_dir):
 
 
 
-"""ViT classification"""
-
-from transformers import ViTImageProcessor, ViTForImageClassification
-from PIL import Image
-
-
-processor_vit = ViTImageProcessor.from_pretrained('google/vit-base-patch16-224')
-model_vit = ViTForImageClassification.from_pretrained('google/vit-base-patch16-224')
-
-
-'''import matplotlib.pyplot as plt
-device=torch.device("cuda" if torch.cuda.is_available else "cpu")
-model_vit.to(device)
-torch.cuda.empty_cache()
-arr=[]
-for image_ in os.listdir(save_folder):
-  image_path = os.path.join(save_folder, image_)
-  try:
-    image=Image.open(image_path).convert("RGB")
-    plt.imshow(image)
-    plt.axis('off')
-    plt.show()
-    inputs = processor_vit(images=image, return_tensors="pt").to(device)
-    outputs = model_vit(**inputs)
-    logits = outputs.logits
-    predicted_class_idx = logits.argmax(-1).item()
-    arr.append(model_vit.config.id2label[predicted_class_idx])
-    print("Predicted class:", model.config.id2label[predicted_class_idx])
-  except Exception as e:
-    continue
-'''
-
-"""НАДО!
-Обучить классификатор нормально классы определять по моим данным. То есть кастомный мой датасет загрузить в модель классификатора, дообучить, заранее поделив данные на трейн и тест.
-"""
 
